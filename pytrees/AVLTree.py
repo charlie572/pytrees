@@ -79,7 +79,21 @@ class AVLTree:
             return self.root.height
         else:
             return -1
-    
+
+    def get_min(self):
+        if self.root is None:
+            return None
+
+        node = self._findSmallest(self.root)
+        return node.val
+
+    def get_max(self):
+        if self.root is None:
+            return None
+
+        node = self._findBiggest(self.root)
+        return node.val
+
     def _findSmallest(self, start_node):
         assert (not start_node is None)
         node = start_node
@@ -398,6 +412,14 @@ class AVLTree:
                 assert (node.right)
                 node.right.parent = parent 
             self._recomputeHeights(parent)
+        else:
+            if node.left is None:
+                self.root = node.right
+            else:
+                self.root = node.left
+
+            self.root.parent = None
+
         del node
         # rebalance
         node = parent
