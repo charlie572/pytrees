@@ -30,27 +30,44 @@ import random
 
 
 class AVLNode:
-    def __init__(self, val):
+    def __init__(self, val, op_count):
+        op_count[0] += 2
         self.val = val
+        op_count[0] += 2
         self.parent = None
+        op_count[0] += 2
         self.left = None
-        self.right = None 
+        op_count[0] += 2
+        self.right = None
+        op_count[0] += 2
         self.height = 0
 
-    def isLeaf(self):
+    def isLeaf(self, op_count):
+        op_count[0] += 3
         return (self.height == 0)
     
-    def maxChildrenHeight(self):
+    def maxChildrenHeight(self, op_count):
+        op_count[0] += 3
         if self.left and self.right:
+            op_count[0] += 4
             return max(self.left.height, self.right.height)
         elif self.left and not self.right:
+            op_count[0] += 4
+            op_count[0] += 1
             return self.left.height
         elif not self.left and  self.right:
+            op_count[0] += 4
+            op_count[0] += 4
+            op_count[0] += 1
             return self.right.height
         else:
+            op_count[0] += 4
+            op_count[0] += 4
+            op_count[0] += 1
             return -1
     
-    def balanceFactor(self):
+    def balanceFactor(self, op_count):
+        op_count[0] += 7
         return (self.left.height if self.left else -1) - (self.right.height if self.right else -1)
     
     def __str__(self):
@@ -61,106 +78,169 @@ class AVLTree:
         self.root = None
         self.rebalance_count = 0
         self.nodes_count = 0
+        self.op_count = [0]
     
     def setRoot(self, val):
         """
         Set the root value
         """
-        self.root = AVLNode(val)
+        self.op_count[0] += 2
+        self.root = AVLNode(val, self.op_count)
     
     def countNodes(self):
+        self.op_count[0] += 1
         return self.nodes_count
     
     def getDepth(self):
         """
         Get the max depth of the BST
         """
+        self.op_count[0] += 1
         if self.root:
+            self.op_count[0] += 1
             return self.root.height
         else:
+            self.op_count[0] += 1
             return -1
 
     def get_min(self):
+        self.op_count[0] += 3
         if self.root is None:
+            self.op_count[0] += 1
             return None
 
+        self.op_count[0] += 2
         node = self._findSmallest(self.root)
+        self.op_count[0] += 1
         return node.val
 
     def get_max(self):
+        self.op_count[0] += 3
         if self.root is None:
+            self.op_count[0] += 1
             return None
 
+        self.op_count[0] += 2
         node = self._findBiggest(self.root)
+        self.op_count[0] += 1
         return node.val
 
     def _findSmallest(self, start_node):
         assert (not start_node is None)
+        self.op_count[0] += 2
         node = start_node
         while node.left:
+            self.op_count[0] += 1
+            self.op_count[0] += 2
             node = node.left
+        self.op_count[0] += 1
+        self.op_count[0] += 1
         return node
     
     def _findBiggest(self, start_node):
         assert (not start_node is None)
+        self.op_count[0] += 2
         node = start_node
         while node.right:
+            self.op_count[0] += 1
+            self.op_count[0] += 2
             node = node.right
-        return node 
+        self.op_count[0] += 1
+        self.op_count[0] += 1
+        return node
 
     def insert(self, val):
         """
         insert a val into AVLTree
         """
+        self.op_count[0] += 3
         if self.root is None:
+            self.op_count[0] += 1
             self.setRoot(val)
         else:
+            self.op_count[0] += 2
             self._insertNode(self.root, val)
+        self.op_count[0] += 4
         self.nodes_count += 1
     
     def _insertNode(self, currentNode, val):
         """
         Helper function to insert a value into AVLTree.
         """
+        self.op_count[0] += 2
         node_to_rebalance = None
+        self.op_count[0] += 3
         if currentNode.val > val:
+            self.op_count[0] += 1
             if(currentNode.left):
+                self.op_count[0] += 2
                 self._insertNode(currentNode.left, val)
             else:
-                child_node = AVLNode(val)
+                self.op_count[0] += 2
+                child_node = AVLNode(val, self.op_count)
+                self.op_count[0] += 2
                 currentNode.left = child_node
+                self.op_count[0] += 2
                 child_node.parent = currentNode
+                self.op_count[0] += 3
                 if currentNode.height == 0:
+                    self.op_count[0] += 1
                     self._recomputeHeights(currentNode)
+                    self.op_count[0] += 2
                     node = currentNode
                     while node:
-                        if node.balanceFactor() in [-2 , 2]:
+                        self.op_count[0] += 1
+                        self.op_count[0] += 1
+                        self.op_count[0] += 6
+                        if node.balanceFactor(self.op_count) in [-2 , 2]:
+                            self.op_count[0] += 2
                             node_to_rebalance = node
                             break #we need the one that is furthest from the root
+                        self.op_count[0] += 2
                         node = node.parent
+                    self.op_count[0] += 1
         else:
+            self.op_count[0] += 1
             if(currentNode.right):
+                self.op_count[0] += 2
                 self._insertNode(currentNode.right, val)
             else:
-                child_node = AVLNode(val)
+                self.op_count[0] += 3
+                child_node = AVLNode(val, self.op_count)
+                self.op_count[0] += 2
                 currentNode.right = child_node
+                self.op_count[0] += 2
                 child_node.parent = currentNode
+                self.op_count[0] += 3
                 if currentNode.height == 0:
+                    self.op_count[0] += 1
                     self._recomputeHeights(currentNode)
+                    self.op_count[0] += 2
                     node = currentNode
                     while node:
-                        if node.balanceFactor() in [-2 , 2]:
+                        self.op_count[0] += 1
+                        self.op_count[0] += 6
+                        if node.balanceFactor(self.op_count) in [-2 , 2]:
+                            self.op_count[0] += 2
                             node_to_rebalance = node
                             break #we need the one that is furthest from the root
+                        self.op_count[0] += 2
                         node = node.parent
+                    self.op_count[0] += 1
+        self.op_count[0] += 1
         if node_to_rebalance:
+            self.op_count[0] += 1
             self._rebalance(node_to_rebalance)
 
     def _rebalance(self, node_to_rebalance):
-        A = node_to_rebalance 
+        self.op_count[0] += 2
+        A = node_to_rebalance
+        self.op_count[0] += 2
         F = A.parent #allowed to be NULL
-        if A.balanceFactor() == -2:
-            if A.right.balanceFactor() <= 0:
+        self.op_count[0] += 3
+        if A.balanceFactor(self.op_count) == -2:
+            self.op_count[0] += 3
+            if A.right.balanceFactor(self.op_count) <= 0:
                 """Rebalance, case RRC 
                 [Original]:                   
                         F                         
@@ -178,24 +258,40 @@ class AVLTree:
                          / \  
                         A   C
                 """
+                self.op_count[0] += 2
                 B = A.right
+                self.op_count[0] += 2
                 C = B.right
                 assert (not A is None and not B is None and not C is None)
+                self.op_count[0] += 2
                 A.right = B.left
+                self.op_count[0] += 1
                 if A.right:
+                    self.op_count[0] += 2
                     A.right.parent = A
+                self.op_count[0] += 2
                 B.left = A
-                A.parent = B                                                               
-                if F is None:                                                              
-                   self.root = B 
-                   self.root.parent = None                                                   
-                else:                                                                        
-                   if F.right == A:                                                          
-                       F.right = B                                                                  
-                   else:                                                                      
-                       F.left = B                                                                   
-                   B.parent = F 
-                self._recomputeHeights(A) 
+                self.op_count[0] += 2
+                A.parent = B
+                self.op_count[0] += 3
+                if F is None:
+                    self.op_count[0] += 2
+                    self.root = B
+                    self.op_count[0] += 2
+                    self.root.parent = None
+                else:
+                    self.op_count[0] += 3
+                    if F.right == A:
+                        self.op_count[0] += 2
+                        F.right = B
+                    else:
+                        self.op_count[0] += 2
+                        F.left = B
+                    self.op_count[0] += 2
+                    B.parent = F
+                self.op_count[0] += 1
+                self._recomputeHeights(A)
+                self.op_count[0] += 1
                 self._recomputeHeights(B.parent)
             else:
                 """Rebalance, case RLC 
@@ -215,33 +311,55 @@ class AVLTree:
                          / \  
                         A   B
                 """
+                self.op_count[0] += 2
                 B = A.right
+                self.op_count[0] += 2
                 C = B.left
                 assert (not A is None and not B is None and not C is None)
+                self.op_count[0] += 2
                 B.left = C.right
+                self.op_count[0] += 1
                 if B.left:
+                    self.op_count[0] += 2
                     B.left.parent = B
+                self.op_count[0] += 2
                 A.right = C.left
+                self.op_count[0] += 1
                 if A.right:
+                    self.op_count[0] += 2
                     A.right.parent = A
+                self.op_count[0] += 2
                 C.right = B
-                B.parent = C                                                               
+                self.op_count[0] += 2
+                B.parent = C
+                self.op_count[0] += 2
                 C.left = A
-                A.parent = C                                                             
-                if F is None:                                                             
+                self.op_count[0] += 2
+                A.parent = C
+                self.op_count[0] += 3
+                if F is None:
+                    self.op_count[0] += 2
                     self.root = C
-                    self.root.parent = None                                                    
-                else:                                                                        
-                    if F.right == A:                                                         
-                        F.right = C                                                                                     
-                    else:                                                                      
+                    self.op_count[0] += 2
+                    self.root.parent = None
+                else:
+                    self.op_count[0] += 3
+                    if F.right == A:
+                        self.op_count[0] += 2
+                        F.right = C
+                    else:
+                        self.op_count[0] += 2
                         F.left = C
+                    self.op_count[0] += 2
                     C.parent = F
+                self.op_count[0] += 1
                 self._recomputeHeights(A)
+                self.op_count[0] += 1
                 self._recomputeHeights(B)
         else:
-            assert(node_to_rebalance.balanceFactor() == +2)
-            if node_to_rebalance.left.balanceFactor() >= 0:
+            assert(node_to_rebalance.balanceFactor([0]) == +2)
+            self.op_count[0] += 3
+            if node_to_rebalance.left.balanceFactor(self.op_count) >= 0:
                 """Rebalance, case LLC 
                 [Original]:                   
                         F                         
@@ -259,24 +377,40 @@ class AVLTree:
                      / \  
                     C   A
                 """
+                self.op_count[0] += 2
                 B = A.left
+                self.op_count[0] += 2
                 C = B.left
                 assert (not A is None and not B is None and not C is None)
+                self.op_count[0] += 2
                 A.left = B.right
+                self.op_count[0] += 1
                 if A.left:
+                    self.op_count[0] += 2
                     A.left.parent = A
+                self.op_count[0] += 2
                 B.right = A
-                A.parent = B                                                               
-                if F is None:                                                              
-                   self.root = B 
-                   self.root.parent = None                                                   
-                else:                                                                        
-                   if F.right == A:                                                          
-                       F.right = B                                                                  
-                   else:                                                                      
-                       F.left = B                                                                   
-                   B.parent = F 
-                self._recomputeHeights(A) 
+                self.op_count[0] += 2
+                A.parent = B
+                self.op_count[0] += 3
+                if F is None:
+                    self.op_count[0] += 2
+                    self.root = B
+                    self.op_count[0] += 2
+                    self.root.parent = None
+                else:
+                    self.op_count[0] += 3
+                    if F.right == A:
+                        self.op_count[0] += 2
+                        F.right = B
+                    else:
+                        self.op_count[0] += 2
+                        F.left = B
+                    self.op_count[0] += 2
+                    B.parent = F
+                self.op_count[0] += 1
+                self._recomputeHeights(A)
+                self.op_count[0] += 1
                 self._recomputeHeights(B.parent)
             else:
                 """Rebalance, case LRC 
@@ -297,39 +431,68 @@ class AVLTree:
                      / \  
                     B   A
                 """
+                self.op_count[0] += 2
                 B = A.left
+                self.op_count[0] += 2
                 C = B.right
                 assert (not A is None and not B is None and not C is None)
+                self.op_count[0] += 2
                 A.left = C.right
+                self.op_count[0] += 1
                 if A.left:
+                    self.op_count[0] += 2
                     A.left.parent = A
+                self.op_count[0] += 2
                 B.right = C.left
+                self.op_count[0] += 1
                 if B.right:
+                    self.op_count[0] += 2
                     B.right.parent = B
+                self.op_count[0] += 2
                 C.left = B
+                self.op_count[0] += 2
                 B.parent = C
+                self.op_count[0] += 2
                 C.right = A
+                self.op_count[0] += 2
                 A.parent = C
+                self.op_count[0] += 3
                 if F is None:
-                   self.root = C
-                   self.root.parent = None
+                    self.op_count[0] += 2
+                    self.root = C
+                    self.op_count[0] += 2
+                    self.root.parent = None
                 else:
-                   if (F.right == A):
-                       F.right = C
-                   else:
-                       F.left = C
-                   C.parent = F
+                    self.op_count[0] += 3
+                    if (F.right == A):
+                        self.op_count[0] += 2
+                        F.right = C
+                    else:
+                        self.op_count[0] += 2
+                        F.left = C
+                    self.op_count[0] += 2
+                    C.parent = F
+                self.op_count[0] += 1
                 self._recomputeHeights(A)
+                self.op_count[0] += 1
                 self._recomputeHeights(B)
+        self.op_count[0] += 4
         self.rebalance_count += 1
 
     def _recomputeHeights(self, start_from_node):
+        self.op_count[0] += 2
         changed = True
+        self.op_count[0] += 2
         node = start_from_node
+        self.op_count[0] += 3
         while node and changed:
+            self.op_count[0] += 2
             old_height = node.height
-            node.height = (node.maxChildrenHeight() + 1 if (node.right or node.left) else 0)
+            self.op_count[0] += 10
+            node.height = (node.maxChildrenHeight(self.op_count) + 1 if (node.right or node.left) else 0)
+            self.op_count[0] += 4
             changed = node.height != old_height
+            self.op_count[0] += 2
             node = node.parent
     
     def search(self, key):
@@ -337,19 +500,30 @@ class AVLTree:
         Search a AVLNode satisfies AVLNode.val = key.
         if found return AVLNode, else return None.
         """
+        self.op_count[0] += 2
         return self._dfsSearch(self.root, key)
     
     def _dfsSearch(self, currentNode, key):
         """
         Helper function to search a key in AVLTree.
         """
+        self.op_count[0] += 3
         if currentNode is None:
+            self.op_count[0] += 1
             return None
         elif currentNode.val == key:
+            self.op_count[0] += 3
+            self.op_count[0] += 1
             return currentNode
         elif currentNode.val > key:
+            self.op_count[0] += 3
+            self.op_count[0] += 3
+            self.op_count[0] += 2
             return self._dfsSearch(currentNode.left, key)
         else:
+            self.op_count[0] += 3
+            self.op_count[0] += 3
+            self.op_count[0] += 2
             return self._dfsSearch(currentNode.right, key)
 
     def delete(self, key):
@@ -357,9 +531,12 @@ class AVLTree:
         Delete a key from AVLTree
         """
         # first find
+        self.op_count[0] += 2
         node = self.search(key)
-        
+
+        self.op_count[0] += 4
         if not node is None:
+            self.op_count[0] += 4
             self.nodes_count -= 1
             #     There are three cases:
             # 
@@ -371,146 +548,243 @@ class AVLTree:
             #     3) The node has two children. Swap items with the successor
             #        of the node (the smallest item in its right subtree) and
             #        delete the successor from the right subtree of the node.
-            if node.isLeaf():
+            if node.isLeaf(self.op_count):
+                self.op_count[0] += 1
                 self._removeLeaf(node)
-            elif (bool(node.left)) ^ (bool(node.right)):  
+            elif (bool(node.left)) ^ (bool(node.right)):
+                self.op_count[0] += 7
+                self.op_count[0] += 1
                 self._removeBranch(node)
             else:
+                self.op_count[0] += 7
                 assert (node.left) and (node.right)
+                self.op_count[0] += 1
                 self._swapWithSuccessorAndRemove(node)
 
     def _removeLeaf(self, node):
+        self.op_count[0] += 2
         parent = node.parent
+        self.op_count[0] += 1
         if (parent):
+            self.op_count[0] += 3
             if parent.left == node:
+                self.op_count[0] += 2
                 parent.left = None
             else:
                 assert (parent.right == node)
+                self.op_count[0] += 2
                 parent.right = None
+            self.op_count[0] += 1
             self._recomputeHeights(parent)
         else:
+            self.op_count[0] += 2
             self.root = None
+        self.op_count[0] += 2
         del node
         # rebalance
+        self.op_count[0] += 2
         node = parent
         while (node):
-            if not node.balanceFactor() in [-1, 0, 1]:
+            self.op_count[0] += 1
+            self.op_count[0] += 11
+            if not node.balanceFactor(self.op_count) in [-1, 0, 1]:
+                self.op_count[0] += 1
                 self._rebalance(node)
+            self.op_count[0] += 2
             node = node.parent
-    
+        self.op_count[0] += 1
+
     def _removeBranch(self, node):
+        self.op_count[0] += 2
         parent = node.parent
+        self.op_count[0] += 1
         if (parent):
+            self.op_count[0] += 3
             if parent.left == node:
+                self.op_count[0] += 3
                 parent.left = node.right if node.right else node.left
             else:
                 assert (parent.right == node)
+                self.op_count[0] += 3
                 parent.right = node.right if node.right else node.left
+            self.op_count[0] += 1
             if node.left:
+                self.op_count[0] += 2
                 node.left.parent = parent
             else:
                 assert (node.right)
-                node.right.parent = parent 
+                self.op_count[0] += 2
+                node.right.parent = parent
+            self.op_count[0] += 1
             self._recomputeHeights(parent)
         else:
+            self.op_count[0] += 3
             if node.left is None:
+                self.op_count[0] += 2
                 self.root = node.right
             else:
+                self.op_count[0] += 2
                 self.root = node.left
 
+            self.op_count[0] += 2
             self.root.parent = None
 
+        self.op_count[0] += 2
         del node
         # rebalance
+        self.op_count[0] += 2
         node = parent
+        self.op_count[0] += 1
         while (node):
-            if not node.balanceFactor() in [-1, 0, 1]:
+            self.op_count[0] += 11
+            if not node.balanceFactor(self.op_count) in [-1, 0, 1]:
+                self.op_count[0] += 1
                 self._rebalance(node)
+            self.op_count[0] += 2
             node = node.parent
     
     def _swapWithSuccessorAndRemove(self, node):
+        self.op_count[0] += 2
         successor = self._findSmallest(node.right)
+        self.op_count[0] += 2
         self._swapNodes(node, successor)
         assert (node.left is None)
+        self.op_count[0] += 3
         if node.height == 0:
+            self.op_count[0] += 1
             self._removeLeaf(node)
         else:
+            self.op_count[0] += 1
             self._removeBranch(node)
     
     def _swapNodes(self, node1, node2):
         assert (node1.height > node2.height)
+        self.op_count[0] += 2
         parent1 = node1.parent
+        self.op_count[0] += 2
         leftChild1 = node1.left
+        self.op_count[0] += 2
         rightChild1 = node1.right
+        self.op_count[0] += 2
         parent2 = node2.parent
         assert (not parent2 is None)
         assert (parent2.left == node2 or parent2 == node1)
+        self.op_count[0] += 2
         leftChild2 = node2.left
         assert (leftChild2 is None)
+        self.op_count[0] += 2
         rightChild2 = node2.right
         
         # swap heights
-        tmp = node1.height 
+        self.op_count[0] += 2
+        tmp = node1.height
+        self.op_count[0] += 2
         node1.height = node2.height
+        self.op_count[0] += 2
         node2.height = tmp
-       
+
+        self.op_count[0] += 1
         if parent1:
+            self.op_count[0] += 3
             if parent1.left == node1:
+                self.op_count[0] += 2
                 parent1.left = node2
             else:
                 assert (parent1.right == node1)
+                self.op_count[0] += 2
                 parent1.right = node2
+            self.op_count[0] += 2
             node2.parent = parent1
         else:
+            self.op_count[0] += 2
             self.root = node2
+            self.op_count[0] += 2
             node2.parent = None
-            
+
+        self.op_count[0] += 2
         node2.left = leftChild1
+        self.op_count[0] += 2
         leftChild1.parent = node2
+        self.op_count[0] += 2
         node1.left = leftChild2 # None
+        self.op_count[0] += 2
         node1.right = rightChild2
+        self.op_count[0] += 1
         if rightChild2:
-            rightChild2.parent = node1 
+            self.op_count[0] += 2
+            rightChild2.parent = node1
+        self.op_count[0] += 4
         if not (parent2 == node1):
+            self.op_count[0] += 2
             node2.right = rightChild1
+            self.op_count[0] += 2
             rightChild1.parent = node2
+            self.op_count[0] += 2
             parent2.left = node1
+            self.op_count[0] += 2
             node1.parent = parent2
         else:
+            self.op_count[0] += 2
             node2.right = node1
-            node1.parent = node2  
+            self.op_count[0] += 2
+            node1.parent = node2
 
     def inOrder(self):
+        self.op_count[0] += 2
         res = []
         def _dfs_in_order(node, res):
+            self.op_count[0] += 2
             if not node:
+                self.op_count[0] += 1
                 return
+            self.op_count[0] += 2
             _dfs_in_order(node.left,res)
+            self.op_count[0] += 2
             res.append(node.val)
+            self.op_count[0] += 2
             _dfs_in_order(node.right,res)
+
+        self.op_count[0] += 2
         _dfs_in_order(self.root, res)
+        self.op_count[0] += 1
         return res
     
     def preOrder(self):
+        self.op_count[0] += 2
         res = []
         def _dfs_pre_order(node, res):
+            self.op_count[0] += 2
             if not node:
                 return
+            self.op_count[0] += 1
             res.append(node.val)
+            self.op_count[0] += 2
             _dfs_pre_order(node.left,res)
+            self.op_count[0] += 2
             _dfs_pre_order(node.right,res)
+
+        self.op_count[0] += 2
         _dfs_pre_order(self.root, res)
+        self.op_count[0] += 1
         return res
     
     def postOrder(self):
+        self.op_count[0] += 2
         res = []
         def _dfs_post_order(node, res):
+            self.op_count[0] += 2
             if not node:
                 return
+            self.op_count[0] += 2
             _dfs_post_order(node.left,res)
+            self.op_count[0] += 2
             _dfs_post_order(node.right,res)
+            self.op_count[0] += 2
             res.append(node.val)
+
+        self.op_count[0] += 2
         _dfs_post_order(self.root, res)
+        self.op_count[0] += 1
         return res
     
     @classmethod
